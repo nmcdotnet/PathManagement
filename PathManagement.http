@@ -1,0 +1,6 @@
+@PathManagement_HostAddress = http://localhost:5125
+
+GET {{PathManagement_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
