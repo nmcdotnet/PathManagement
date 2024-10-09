@@ -6,12 +6,12 @@ namespace PathManagement.Repositories
     {
         Task<List<PathModel>> GetAllAsync();
 
-        Task<PathModel?> GetById(int id);
+        Task<List<PathModel>?> GetByIdAsync(int id);
 
         Task<PathModel> CreateAsync(PathModel path);
 
-        Task<PathModel> Update(PathModel path);
+        Task<PathModel?> UpdateAsync(int id, PathModel path);
 
-        Task<PathModel> Delete(int id);
+        Task<PathModel?> DeleteAsync(int id);
     }
 }

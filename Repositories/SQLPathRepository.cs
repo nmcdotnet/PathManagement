@@ -27,21 +27,40 @@ namespace PathManagement.Repositories
         }
 
         // GEt by id
-        public async Task<PathModel?> GetById(int id)
+        public async Task<List<PathModel>?> GetByIdAsync(int id)
         {
-           return await _dbContext.Paths.FirstOrDefaultAsync(path => path.Id == id);
+            var listById = await _dbContext.Paths.Where(p=>p.Id == id).ToListAsync();
+            if (listById == null) return null;
+           return listById;
         }
 
         //Update path
-        public Task<PathModel> Update(PathModel path)
+        public async Task<PathModel?> UpdateAsync(int id, PathModel path)
         {
-            throw new NotImplementedException();
+            var existingPath = await _dbContext.Paths.FirstOrDefaultAsync(path =>path.Id == id);
+            if (existingPath == null)
+            {
+                return null;
+            }
+            // Update value
+            existingPath.Path = path.Path;
+            existingPath.Name = path.Name;
+            existingPath.Description = path.Description;
+            existingPath.GroupPath = path.GroupPath;
+            await _dbContext.SaveChangesAsync();
+            
+            return existingPath;
+
         }
 
         //Delete path
-        public Task<PathModel> Delete(int id)
+        public async Task<PathModel?> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            PathModel? existingPath = await _dbContext.Paths.FirstOrDefaultAsync(p => p.Id == id);
+            if (existingPath == null) return null;
+            _dbContext.Paths.Remove(existingPath); 
+            await _dbContext.SaveChangesAsync();
+            return existingPath;
         }
 
       

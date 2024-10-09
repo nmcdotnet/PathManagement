@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using PathManagement.Data;
 using PathManagement.Models.Domain;
 using PathManagement.Models.DTO;
-using PathManagement.Models.Extensions;
 using PathManagement.Repositories;
 
 namespace PathManagement.Controllers
@@ -15,14 +14,13 @@ namespace PathManagement.Controllers
     [ApiController]
     public class PathController : ControllerBase
     {
+
         private const string _id = "{id:int}";
-        private readonly PathManagementDbContext _dbContext;
         private readonly IPathRepository _pathRepository;
         private readonly IMapper _mapper;
 
-        public PathController(PathManagementDbContext dbContext, IPathRepository pathRepository, IMapper mapper)
+        public PathController(IPathRepository pathRepository, IMapper mapper)
         {
-            _dbContext = dbContext;
             _pathRepository = pathRepository;
             _mapper = mapper;
         }
@@ -35,16 +33,12 @@ namespace PathManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePathDto createPathDto)
         {
-          
             if (createPathDto == null) return BadRequest();
             PathModel pathDomain = _mapper.Map<PathModel>(createPathDto);   //Dto to domain
-            PathModel pathDomainResponse =  await _pathRepository.CreateAsync(pathDomain); 
+            PathModel pathDomainResponse = await _pathRepository.CreateAsync(pathDomain);
             PathModelDto pathDto = _mapper.Map<PathModelDto>(pathDomainResponse);   //Domain to dto
-
-            return CreatedAtAction(nameof(GetById), new {id = pathDto.Id }, pathDto); // action name, route value, respone value
-
+            return CreatedAtAction(nameof(GetById), new { id = pathDto.Id }, pathDto); // action name, route value, respone value
         }
-
 
         /// <summary>
         /// Get all path 
@@ -54,10 +48,9 @@ namespace PathManagement.Controllers
         public async Task<IActionResult> GetAll()
         {
             List<PathModel> pathsDomain = await _pathRepository.GetAllAsync(); //Get path list domain
-            var pathsDto =  _mapper.Map<List<PathModelDto>>(pathsDomain); // Convert from domain to DTO
+            var pathsDto = _mapper.Map<List<PathModelDto>>(pathsDomain); // Convert from domain to DTO
             return Ok(pathsDto);
         }
-       
 
         /// <summary>
         /// Get path by ID
@@ -68,9 +61,42 @@ namespace PathManagement.Controllers
         [Route(_id)]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var pathDomain = await _pathRepository.GetById(id); // get path dto
-            var pathDto = _mapper.Map<List<PathModelDto>>(pathDomain);//Domain => Dto
+            List<PathModel>? pathDomain = await _pathRepository.GetByIdAsync(id); // get path dto
+            List<PathModelDto> pathDto = _mapper.Map<List<PathModelDto>>(pathDomain);//Domain => Dto
             return Ok(pathDto);
         }
+
+        /// <summary>
+        /// Update Path
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="updatePathRequestDto"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route(_id)]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdatePathRequestDto updatePathRequestDto)
+        {
+            PathModel pathDomain = _mapper.Map<PathModel>(updatePathRequestDto);  // Map to Domain Model
+            PathModel? pathUpdated = await _pathRepository.UpdateAsync(id, pathDomain);
+            if (pathUpdated == null) return NotFound();
+            var pathDto = _mapper.Map<PathModelDto>(pathUpdated); // Convert to Dto 
+            return Ok(pathDto);
+        }
+
+        /// <summary>
+        /// Delete Path
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route(_id)]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var removedPath = await _pathRepository.DeleteAsync(id);
+            if (removedPath == null) return NotFound();
+            _mapper.Map<PathModelDto>(removedPath); // Convert to Dto
+            return Ok(removedPath);
+        }
+
     }
 }

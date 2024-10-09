@@ -19,9 +19,9 @@ namespace PathManagement.Models.Domain
         [MaxLength(1024)]
         public string Path { get; set; } // path is required and has a defined maximum length
 
-        public int GroupPathId { get; set; }  // Each Path belongs to a GroupPath
+        public int GroupPathId { get; set; }  // liên kết đến khóa chính của GroupPathModel
 
         [ForeignKey("GroupPathId")] // specify GroupPathId as a foreign key
-        public GroupPathModel GroupPath { get; set; }
+        public GroupPathModel? GroupPath { get; set; }
     }
 }

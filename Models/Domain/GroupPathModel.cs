@@ -12,8 +12,8 @@ namespace PathManagement.Models.Domain
         public string Name { get; set; }
 
         [MaxLength(1024)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public List<PathModel> Paths { get; set; } = new();
+       
     }
 }

@@ -19,11 +19,13 @@ namespace PathManagement
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Setup Database Connection
             builder.Services.AddDbContext<PathManagementDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("PathManagementConnectionString"))); // Add dbcontent connect with sqlserver by connection string from appseting.json
 
             //Inject Repositories
             builder.Services.AddScoped<IPathRepository,SQLPathRepository>();
+            builder.Services.AddScoped<IGroupPathRepository, SQLGroupPathRepository>();
 
             //Automapper
             builder.Services.AddAutoMapper(typeof(AutomapperProfiles));
@@ -38,13 +40,8 @@ namespace PathManagement
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
-
-          
             app.Run();
         }
     }
