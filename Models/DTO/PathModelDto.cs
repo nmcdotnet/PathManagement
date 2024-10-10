@@ -20,5 +20,7 @@ namespace PathManagement.Models.DTO
         public string Path { get; set; } // path is required and has a defined maximum length
 
         public int GroupPathId { get; set; }  // Each Path belongs to a GroupPath
+        
+        public int UserId { get; set; } 
     }
 }

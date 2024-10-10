@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PathManagement.Models;
 using PathManagement.Models.Domain;
 using PathManagement.Models.DTO;
 namespace PathManagement.Mappings
@@ -15,7 +16,12 @@ namespace PathManagement.Mappings
 
             //Map for Group Path
             CreateMap<GroupPathModel,AddGroupPathRequestDto>().ReverseMap();
+            CreateMap<GroupPathModel, UpdateGroupRequestDto>().ReverseMap();
             CreateMap<GroupPathModel,GroupPathModelDto>().ReverseMap(); 
+
+            // User map
+            CreateMap<User,UserDto>().ReverseMap();
+
 
         }
     }

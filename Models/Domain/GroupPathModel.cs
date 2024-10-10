@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace PathManagement.Models.Domain
 {
+    [Index(nameof(Name), IsUnique = true)]
     public class GroupPathModel
     {
         [Key]
@@ -13,7 +15,6 @@ namespace PathManagement.Models.Domain
 
         [MaxLength(1024)]
         public string? Description { get; set; }
-
        
     }
 }

@@ -23,5 +23,10 @@ namespace PathManagement.Models.Domain
 
         [ForeignKey("GroupPathId")] // specify GroupPathId as a foreign key
         public GroupPathModel? GroupPath { get; set; }
+         
+        public int UserId { get; set; } // Link to primary key User table
+
+        [ForeignKey("UserId")]
+        public User? User { get; set; } // specify UserId as a foreign key
     }
 }

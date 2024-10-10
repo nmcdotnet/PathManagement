@@ -26,8 +26,9 @@ namespace PathManagement.Controllers
         public async Task<IActionResult> Create([FromBody] AddGroupPathRequestDto addGroupPathRequestDto)
         {
             var groupPathDomain = _mapper.Map<GroupPathModel>(addGroupPathRequestDto);   // Map to domain
-            await _groupPathRepository.CreateAsync(groupPathDomain);
-            var groupPathDto = _mapper.Map<GroupPathModelDto>(groupPathDomain);
+            var groupDomain = await _groupPathRepository.CreateAsync(groupPathDomain);
+            if (groupDomain == null) NotFound("Khong tim thay");
+            var groupPathDto = _mapper.Map<GroupPathModelDto>(groupDomain);
             return Ok(groupPathDto);
         }
 
@@ -36,15 +37,27 @@ namespace PathManagement.Controllers
         {
             var listGroupPath = await _groupPathRepository.GetAllAsync();
             if (listGroupPath.IsNullOrEmpty()) NotFound();
-            return Ok(listGroupPath);
+
+            return Ok(_mapper.Map<List<GroupPathModelDto>>(listGroupPath));
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route(_id)]
-        public async Task<IActionResult> Update()
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGroupRequestDto updateGroupDto)
         {
-
+            var group = _mapper.Map<GroupPathModel>(updateGroupDto);
+            var groupUpdated = await _groupPathRepository.UpdateAsync(id, group);
+            if(groupUpdated==null) NotFound();
+            return Ok(_mapper.Map<GroupPathModelDto>(groupUpdated));
         }
 
+        [HttpDelete]
+        [Route(_id)]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var group = await _groupPathRepository.DeleteAsync(id);
+            if (group == null) NotFound();
+            return Ok(_mapper.Map<GroupPathModelDto>(group));
+        }
     }
 }

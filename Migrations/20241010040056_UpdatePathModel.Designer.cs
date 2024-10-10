@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PathManagement.Data;
 
@@ -10,9 +11,11 @@ using PathManagement.Data;
 namespace PathManagement.Migrations
 {
     [DbContext(typeof(PathManagementDbContext))]
-    partial class PathManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241010040056_UpdatePathModel")]
+    partial class UpdatePathModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,9 +42,6 @@ namespace PathManagement.Migrations
                         .HasColumnType("nvarchar(1024)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Groups");
                 });

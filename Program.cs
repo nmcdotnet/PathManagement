@@ -26,6 +26,7 @@ namespace PathManagement
             //Inject Repositories
             builder.Services.AddScoped<IPathRepository,SQLPathRepository>();
             builder.Services.AddScoped<IGroupPathRepository, SQLGroupPathRepository>();
+            builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
 
             //Automapper
             builder.Services.AddAutoMapper(typeof(AutomapperProfiles));

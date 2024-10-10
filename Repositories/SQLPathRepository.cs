@@ -6,65 +6,85 @@ namespace PathManagement.Repositories
 {
     public class SQLPathRepository : IPathRepository
     {
-        private readonly PathManagementDbContext _dbContext;
+        private readonly PathManagementDbContext _pathManagementDbContext;
+
         public SQLPathRepository(PathManagementDbContext dbContext)  //Inject Dbcontext
         { 
-            _dbContext = dbContext;
+            _pathManagementDbContext = dbContext;
         }
 
-        // Create new path
-        public async Task<PathModel> CreateAsync(PathModel path)
+        public async Task<PathModel?> CreateAsync(PathModel path)
         {
-            await _dbContext.Paths.AddAsync(path); 
-            await _dbContext.SaveChangesAsync();
-            return path;
+            using var trans = _pathManagementDbContext.Database.BeginTransaction();
+            try
+            {
+                await _pathManagementDbContext.Paths.AddAsync(path);
+                await _pathManagementDbContext.SaveChangesAsync();
+                await trans.CommitAsync();
+                return path;
+            }
+            catch (Exception)
+            {
+                await trans.RollbackAsync();
+                return null;
+            }
+           
         }
 
-        // Get all path list
-        public async Task<List<PathModel>> GetAllAsync()
+        public async Task<List<PathModel>?> GetAllAsync()
         {
-            return await _dbContext.Paths.ToListAsync();
+            return await _pathManagementDbContext.Paths.ToListAsync();
         }
 
-        // GEt by id
         public async Task<List<PathModel>?> GetByIdAsync(int id)
         {
-            var listById = await _dbContext.Paths.Where(p=>p.Id == id).ToListAsync();
+            var listById = await _pathManagementDbContext.Paths.Where(p=>p.Id == id).ToListAsync();
             if (listById == null) return null;
            return listById;
         }
 
-        //Update path
         public async Task<PathModel?> UpdateAsync(int id, PathModel path)
         {
-            var existingPath = await _dbContext.Paths.FirstOrDefaultAsync(path =>path.Id == id);
-            if (existingPath == null)
+            using var trans = _pathManagementDbContext.Database.BeginTransaction();
+            try
             {
+                var existingPath = await _pathManagementDbContext.Paths.FirstOrDefaultAsync(path => path.Id == id);
+                if (existingPath == null)
+                {
+                    return null;
+                }
+                existingPath.Path = path.Path;
+                existingPath.Name = path.Name;
+                existingPath.Description = path.Description;
+                existingPath.GroupPath = path.GroupPath;
+                await _pathManagementDbContext.SaveChangesAsync();
+                await trans.CommitAsync();
+                return existingPath;
+            }
+            catch (Exception)
+            {
+                await trans.RollbackAsync();
                 return null;
             }
-            // Update value
-            existingPath.Path = path.Path;
-            existingPath.Name = path.Name;
-            existingPath.Description = path.Description;
-            existingPath.GroupPath = path.GroupPath;
-            await _dbContext.SaveChangesAsync();
-            
-            return existingPath;
-
         }
 
-        //Delete path
         public async Task<PathModel?> DeleteAsync(int id)
         {
-            PathModel? existingPath = await _dbContext.Paths.FirstOrDefaultAsync(p => p.Id == id);
-            if (existingPath == null) return null;
-            _dbContext.Paths.Remove(existingPath); 
-            await _dbContext.SaveChangesAsync();
-            return existingPath;
+            using var trans = _pathManagementDbContext.Database.BeginTransaction();
+            try
+            {
+                PathModel? existingPath = await _pathManagementDbContext.Paths.FirstOrDefaultAsync(p => p.Id == id);
+                if (existingPath == null) return null;
+                _pathManagementDbContext.Paths.Remove(existingPath);
+                await _pathManagementDbContext.SaveChangesAsync();
+                await trans.CommitAsync();
+                return existingPath;
+            }
+            catch (Exception)
+            {
+                await trans.RollbackAsync();
+                return null;
+            }
         }
-
-      
-
-      
     }
 }

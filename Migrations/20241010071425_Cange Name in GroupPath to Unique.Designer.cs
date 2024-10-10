@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PathManagement.Data;
 
@@ -10,9 +11,11 @@ using PathManagement.Data;
 namespace PathManagement.Migrations
 {
     [DbContext(typeof(PathManagementDbContext))]
-    partial class PathManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241010071425_Cange Name in GroupPath to Unique")]
+    partial class CangeNameinGroupPathtoUnique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
